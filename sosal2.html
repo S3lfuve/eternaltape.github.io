@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EternalTape - Java Minecraft сервер на новейшей версии</title>
+    <style>
+        :root {
+            --bg-primary: #0a0e13;
+            --bg-secondary: #151b23;
+            --bg-card: #1a2332;
+            --accent: #fbbf24;
+            --accent-hover: #fcd34d;
+            --accent-dark: #f59e0b;
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --border-radius: 16px;
+            --transition: 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', 'Arial', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: rgba(10, 14, 19, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: var(--spacing-lg);
+            list-style: none;
+        }
+
+        .navbar-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color var(--transition);
+        }
+
+        .navbar-links a:hover {
+            color: var(--accent);
+        }
+
+        .hero {
+            position: relative;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: var(--spacing-xl) var(--spacing-lg);
+            overflow: hidden;
+        }
+
+		.hero-background {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(135deg, #4a3b0f 0%, #2a2520 50%, #0f1419 100%);
+			background-size: 200% 200%;
+			z-index: -2;
+			animation: gradientShift 8s ease infinite;
+		}
+
+		@keyframes gradientShift {
+			0% {
+				background-position: 0% 50%;
+			}
+			50% {
+				background-position: 100% 50%;
+			}
+			100% {
+				background-position: 0% 50%;
+			}
+		}
+
+
+		.hero-background::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: 
+				radial-gradient(circle at 20% 30%, rgba(251, 191, 36, 0.15) 0%, transparent 50%),
+				radial-gradient(circle at 80% 70%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
+			animation: glowShift 8s ease infinite;
+		}
+
+		@keyframes glowShift {
+			0% {
+				opacity: 0.8;
+			}
+			50% {
+				opacity: 1;
+			}
+			100% {
+				opacity: 0.8;
+			}
+		}
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 900;
+            margin-bottom: var(--spacing-md);
+            background: linear-gradient(135deg, #ffffff 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.25rem, 3vw, 1.75rem);
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
+        }
+
+        .hero-ip-block {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .hero-ip {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all var(--transition);
+            cursor: pointer;
+            border: none;
+            outline: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            color: var(--bg-primary);
+            box-shadow: 0 4px 20px rgba(251, 191, 36, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(251, 191, 36, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .card .btn-secondary:hover {
+            background: var(--accent);
+            color: #151b23;
+        }
+
+        .btn:focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 3px;
+        }
+
+        .btn-small {
+            padding: 0.625rem 1.25rem;
+            font-size: 0.875rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-lg);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            transition: all var(--transition);
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 40px rgba(251, 191, 36, 0.2);
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-sm);
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.7;
+        }
+
+        .card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card ul li {
+            padding: var(--spacing-xs) 0;
+            color: var(--text-secondary);
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .card ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .card a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color var(--transition);
+        }
+
+        .card a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        .card .btn {
+            margin-top: var(--spacing-sm);
+            width: 100%;
+        }
+
+        .faq-section {
+            max-width: 900px;
+            margin: 0 auto var(--spacing-xl);
+        }
+
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-sm);
+            overflow: hidden;
+            transition: all var(--transition);
+        }
+
+        .faq-item:hover {
+            border-color: var(--accent);
+        }
+
+        .faq-question {
+            width: 100%;
+            padding: var(--spacing-md);
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.125rem;
+            font-weight: 700;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: color var(--transition);
+        }
+
+        .faq-question:hover {
+            color: var(--accent);
+        }
+
+        .faq-question:focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: -3px;
+        }
+
+        .faq-icon {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            transition: transform var(--transition);
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            overflow: hidden;
+            transition: max-height 0.35s ease-in-out;
+            max-height: 0;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+        }
+
+        .faq-answer-content {
+            padding: 0 var(--spacing-md) var(--spacing-md);
+        }
+
+        .faq-answer p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .contact-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            text-align: center;
+            transition: all var(--transition);
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .contact-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 40px rgba(251, 191, 36, 0.2);
+        }
+
+        .contact-card h3 {
+            color: var(--accent);
+            margin-bottom: var(--spacing-xs);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .contact-card p {
+            color: var(--text-secondary);
+        }
+
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: var(--spacing-xl) var(--spacing-lg);
+            text-align: center;
+        }
+
+        .legal-notice {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: var(--spacing-sm);
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .copyright {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .copy-notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--accent);
+            color: var(--bg-primary);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 12px;
+            font-weight: 700;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition);
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 8px 30px rgba(251, 191, 36, 0.4);
+        }
+
+        .copy-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .navbar-links {
+                display: none;
+            }
+
+            .hero {
+                min-height: 500px;
+                padding: var(--spacing-lg);
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contacts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="#" class="navbar-brand">EternalTape</a>
+            <ul class="navbar-links">
+                <li><a href="#about">О сервере</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#contacts">Контакты</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-background"></div>
+        <div class="hero-content">
+            <h1>EternalTape</h1>
+            <p class="hero-subtitle">Ванильный Java Minecraft сервер на новейшей версии</p>
+            <div class="hero-ip-block">
+                <span class="hero-ip">Eternal-Tape.ru</span>
+                <button class="btn btn-primary btn-small" id="copyIpHero" aria-label="Скопировать IP сервера">Скопировать</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="container" id="about">
+        <h2 class="section-title">Информация о сервере</h2>
+        
+        <div class="cards-grid">
+
+            <div class="card">
+                <h3>Администрация</h3>
+                <p>По всем вопросам обращайся к админам в Telegram:</p>
+                <p><strong>@vip_kazah_kotakbas @naswaybo</strong></p>
+            </div>
+
+            <div class="card">
+                <h3>Моды</h3>
+                <p>Можно играть без модов, но с ними интереснее:</p>
+                <ul>
+                    <li><a href="https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat" target="_blank" rel="noopener noreferrer">Simple Voice Chat</a></li>
+                    <li><a href="https://www.curseforge.com/minecraft/mc-mods/emotecraft" target="_blank" rel="noopener noreferrer">EmoteCraft</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Чаты</h3>
+                <p><strong>Глобальный:</strong> видят все игроки. Для отправки используй <strong>!</strong> перед сообщением</p>
+                <p>Пример: <em>!Пук пук пук</em></p>
+                <p><strong>Локальный:</strong> видят игроки в радиусе 100-а блоков. Пиши без префикса.</p>
+                <p>Пример: <em>Среньк среньк среньк</em></p>
+            </div>
+			
+            <div class="card">
+                <h3>Поддержка сервера</h3>
+                <p>Хочешь помочь проекту? Любая финансовая поддержка приветствуется:</p>
+                <a href="https://www.donationalerts.com/r/diktafon" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Донат</a>
+            </div>
+
+            <div class="card">
+                <h3>Версия и проходка</h3>
+                <p>Сервер работает на <strong>Minecraft 1.21.5</strong>.</p>
+                <p>Стоимость проходки: <strong>50 рублей</strong>.</p>
+            </div>
+			
+            <div class="card">
+                <h3>Правила сервера</h3>
+                <p>Перед игрой на сервере обязательно к ознакомлению:</p>
+                <a href="https://t.me/EternalTape5/329" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Читать правила</a>
+            </div>
+
+        </div>
+
+		<div style="width: 100%; text-align: center; margin: var(--spacing-xl) 0;">
+			<img id="server-banner" src="https://i.ibb.co/0p8kJ00m/image-1.png" alt="Баннер EternalTape" style="display: block; margin: 0 auto; max-width: 1546px; width: 100%; height: 423px; object-fit: cover; border-radius: var(--border-radius);" />
+		</div>
+
+        <h2 class="section-title" id="contacts">Контакты</h2>
+        <div class="contacts-grid">
+            <a href="https://t.me/EternalTape5" class="contact-card" target="_blank" rel="noopener noreferrer">
+                <h3>Telegram</h3>
+                <p>Основной новостной источник</p>
+            </a>
+            <a href="https://www.youtube.com/@Diktafon" class="contact-card" target="_blank" rel="noopener noreferrer">
+                <h3>YouTube</h3>
+                <p>Канал Diktafon'a, главного медиа-креатора на сервере и по совместительству создателя сервера</p>
+            </a>
+        </div>
+
+        <h2 class="section-title" id="faq">Часто задаваемые вопросы ( Q&A )</h2>
+        <div class="faq-section">
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false">
+                    <span>Нужны ли моды для игры?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Нет, зайти можно и без модов. Но Simple Voice Chat и EmoteCraft добавляют голосовой чат и эмоции, что улучшает комуникацию между игроками!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false">
+                    <span>Какая версия Minecraft поддерживается?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Сервер работает на версии 1.21.5. Заходить можно только с этой версии.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false">
+                    <span>Бывают ли на сервере вайпы?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Среднее время продолжительности сезона - ~6 месяцев.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false">
+                    <span>Разрешён ли PvP?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Иногда на сервере проводятся PVP ивенты или события, но убийства без причины и гриферство запрещены. </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false">
+                    <span>Есть ли на сервере приваты?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Приватов на сервере нет и не будет, так как сервер ванильный, но гриферство отслеживается и наказывается.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false">
+                    <span>Что по экономике?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Экономика меж игроками полностью зависит от вас самих, часто за валюту принимают алмазы или алмазную руду, но ничто не запрещает вам платить тем, чем вам удобно.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false">
+                    <span>Куда писать, если нужна помощь?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Обращайся к администратору @vip_kazah_kotakbas или @naswaybo в Telegram или в личные сообщения телеграмм канала @EternalTape5.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p class="legal-notice">
+            Eternal Tape is not affiliated with or endorsed by Mojang Studios, Microsoft, or any other rights holder. Minecraft is a trademark of Mojang Studios. All trademarks, copyrights, and other rights related to Minecraft belong to their respective owners.
+        </p>
+        <p class="copyright">&copy; 2025 EternalTape. Все права защищены.</p>
+    </footer>
+
+    <div class="copy-notification" id="copyNotification" role="status" aria-live="polite"></div>
+
+    <script>
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('IP скопирован: ' + text);
+                }).catch(err => {
+                    console.error('Ошибка копирования:', err);
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showNotification('IP скопирован!');
+            } catch (err) {
+                console.error('Ошибка копирования:', err);
+                showNotification('Не удалось скопировать');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('copyNotification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        document.getElementById('copyIpHero').addEventListener('click', () => {
+            copyToClipboard('eternal-tape.ru');
+        });
+
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            
+            question.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item && otherItem.classList.contains('active')) {
+                        otherItem.classList.remove('active');
+                        otherItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+                    }
+                });
+                
+                if (isActive) {
+                    item.classList.remove('active');
+                    question.setAttribute('aria-expanded', 'false');
+                } else {
+                    item.classList.add('active');
+                    question.setAttribute('aria-expanded', 'true');
+                }
+            });
+
+            question.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    question.click();
+                }
+            });
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && href.length > 1) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
